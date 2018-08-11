@@ -418,6 +418,12 @@
           params.renderer.camera.readPrefix;
       }
 
+      if (params.filterHidden) {
+        var filterFunction = function(x){return !x.hidden}
+        nodes = nodes.filter(filterFunction)
+        edges = edges.filter(filterFunction)
+      }
+
       var o,
           attrs,
           nodeAttrIndex = {},
@@ -2060,10 +2066,11 @@
       s.settings('batchEdgesDrawing', false); // it may crash if true
     }
 
-    if(!params.clip)
-      this.clone(s, params, ratio);
+    if(!params.clip) {
+      clone(s, params, ratio);
+    }
 
-    var merged = this.draw(r, params, ratio);
+    var merged = draw(r, params, ratio);
 
     s.settings('batchEdgesDrawing', batchEdgesDrawing); // restore setting
 
@@ -2083,7 +2090,7 @@
   * @param {s}  sigma instance
   * @param {params}  Options
   */
-  Image.prototype.clone = function(s, params, ratio) {
+  function clone(s, params, ratio) {
     params.tmpContainer = params.tmpContainer || 'image-container';
 
     var pixelRatio = sigma.utils.getPixelRatio();
@@ -2168,7 +2175,7 @@
   * @param {renderer}  related renderer instance
   * @param {params}  Options
   */
-  Image.prototype.draw = function(r, params, ratio) {
+  function draw(r, params, ratio) {
     var webgl = r instanceof sigma.renderers.webgl,
         sized = false,
         doneContexts = [];
@@ -2244,33 +2251,13 @@
    * Interface
    * ------------------
    */
-  var _instance = null;
-
   /**
    * @param {sigma}  s       The related sigma instance.
    * @param {renderer}  r    The related renderer instance.
    * @param {object} options An object with options.
    */
-  sigma.plugins.image = function(s, r, options) {
-    sigma.plugins.killImage();
-    // Create object if undefined
-    if (!_instance) {
-      _instance = new Image(s, r, options);
-    }
-    return _instance;
-  };
-
-  /**
-   *  This function kills the image instance.
-   */
-  sigma.plugins.killImage = function() {
-    if (_instance instanceof Image) {
-      _instance = null;
-      _canvas = null;
-      _canvasContext = null;
-    }
-  };
-
+  sigma.plugins.image = Image;
+  sigma.plugins.image.bind(this);
 }).call(this);
 
 ;(function(undefined) {
@@ -19886,9 +19873,9 @@ sigma.plugins.colorbrewer = {YlGn: {
     }
 
     // draw label with a background
-    if (sigma.canvas.edges.labels && sigma.canvas.edges.labels.arrow) {
+    if (sigma.canvas.edges.labels && sigma.canvas.edges.labels.def) {
       edge.hover = true;
-      sigma.canvas.edges.labels.arrow(edge, source, target, context, settings);
+      sigma.canvas.edges.labels.def(edge, source, target, context, settings);
       edge.hover = false;
     }
   };
