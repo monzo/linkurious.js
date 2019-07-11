@@ -12,7 +12,7 @@
   "main": "dist/sigma.require.js",
   "dependencies": {
     "xlsx": "~0.7.12",
-    "dagre": "~0.7.4"
+    "dagre": "^0.8.4"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
